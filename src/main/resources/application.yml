@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    name: development
+    url: jdbc:mysql://127.0.0.1:3306/db_springboot_mybatis?unicode=true&characterEncoding=utf8
+    username: root
+    password: root
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.haven.framework.springboot.mybatis.domain

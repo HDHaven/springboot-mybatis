@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    
+<mapper namespace="com.haven.framework.springboot.mybatis.repository.SuperRepository">
+	
+	<!-- 
+		<selectKey keyProperty="id" resultType="long" order="BEFORE">keyProperty="id" useGeneratedKeys="true"
+			select if(max(id) is null, 1, max(id) + 2) as newId from ${tableName }
+		</selectKey>
+	 -->
+	
+	<insert id="insertOne">
+		INSERT INTO ${tableName } 
+		<foreach collection="columnNames" open="(" separator="," close=")" item="columnName">
+			${columnName }
+		</foreach>
+		VALUES
+		<foreach collection="columnValues" open="(" separator="," close=")" item="columnValue">
+			#{columnValue }
+		</foreach>		
+	</insert>
+	
+	<insert id="insertBatch">
+		INSERT INTO ${tableName }
+		<foreach collection="columnNames" open="(" separator="," close=")" item="columnName">
+			${columnName }
+		</foreach>
+		VALUES
+		<foreach collection="batchColumnValues" separator="," item="columnValues">
+			<foreach collection="columnValues" open="(" separator="," close=")" item="columnValue">
+				#{columnValue }
+			</foreach>
+		</foreach>
+	</insert>
+	
+	<delete id="deleteOne">
+		DELETE FROM ${tableName }
+		WHERE ${pk } = #{id }
+	</delete>
+	
+	<delete id="deleteBatch">
+		DELETE FROM ${tableName }
+		WHERE ${pk } IN 
+		<foreach collection="ids" open="(" separator="," close=")" item="id">
+			#{id }
+		</foreach>
+	</delete>
+	
+	<update id="update">
+		UPDATE ${tableName }
+		SET
+		<foreach collection="updateColunms" separator="," index="key" item="value">
+			${key } = #{value }
+		</foreach>
+		WHERE ${pk } = #{id }
+	</update>
+	
+	<select id="selectOne" resultType="map">
+		SELECT
+		<foreach collection="columnNames" separator="," item="columnName">
+			${columnName }
+		</foreach>
+		FROM ${tableName }
+		WHERE ${pk } = #{id }
+	</select>
+	
+	<select id="selectList" resultType="map">
+		SELECT 
+		<foreach collection="queryColumns" separator="," item="columnName">
+			${columnName }
+		</foreach>
+		FROM ${tableName } 
+		<if test="condition != null">
+			WHERE
+			<foreach collection="condition" separator=" and " index="columnName" item="columnValue">
+				${columnName } #{columnValue }
+			</foreach>
+		</if>
+		<if test="orderBy != null">
+			ORDER BY 
+			<foreach collection="orderBy" separator="," item="order">
+				${order }
+			</foreach>
+		</if>
+		<if test="offset != null and rowCount != null">
+			LIMIT ${offset }, ${rowCount }
+		</if>
+	</select>
+	
+	<select id="selectCount" resultType="map">
+		SELECT count(1) as totalCount FROM ${tableName }
+		<if test="condition != null">
+			WHERE
+			<foreach collection="condition" separator=" AND " index="columnName" item="columnValue">
+				${columnName } #{columnValue }
+			</foreach>
+		</if>
+	</select>
+	
+	<select id="selectIn" resultType="map">
+		SELECT
+		<foreach collection="queryColumns" separator="," item="column">
+			${column }
+		</foreach> 
+		FROM ${tableName }
+		<if test="condition != null">
+			WHERE ${columnName }
+			<foreach collection="condition" open="(" separator="," close=")" item="columnValue">
+				#{columnValue }
+			</foreach>
+		</if>
+	</select>
+	
+</mapper>
